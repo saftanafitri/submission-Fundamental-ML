@@ -68,6 +68,7 @@ Tidak ada Duplikasi dan Nilai NULL pada data.
 2. Distribusi Kelas Target
 - Depression = 1 (mengalami depresi): ~16.000 siswa.
 - Depression = 0 (tidak mengalami depresi): ~11.500 siswa.
+
 Dataset sedikit tidak seimbang, namun masih dalam batas toleransi.
 
 3. Korelasi Antar Fitur (Heatmap)
@@ -81,6 +82,7 @@ Korelasi terhadap Depression:
 Kolom dengan skewness ekstrem (di luar rentang -0.5 hingga 0.5):
 - Work Pressure: 108.59
 - Job Satisfaction: 74.11
+
 Interpretasi:
 Kedua fitur ini sangat tidak seimbang (sangat banyak nilai 0 atau 1), kemungkinan besar tidak memberi kontribusi signifikan terhadap model.
 
