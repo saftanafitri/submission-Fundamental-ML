@@ -114,13 +114,12 @@ Untuk mengevaluasi kinerja model dalam mendeteksi apakah seorang siswa mengalami
 - **F1-Score**: Harmonik dari precision dan recall.
 
 ### Hasil Evaluasi
-|-----------------------|----------|-----------|--------|----------|
+
 | Model                 | Accuracy | Precision | Recall | F1-Score |
 |-----------------------|----------|-----------|--------|----------|
 |**LogisticRegression** | 0.84     | 0.84      | 0.84   | 0.84     |
 | Random Forest         | 0.83     | 0.83      | 0.82   | 0.83     |
 | SVM                   | 0.83     | 0.83      | 0.83   | 0.83     |
-|-----------------------|----------|-----------|--------|----------|
 
 
 Penjelasan:
