@@ -101,35 +101,38 @@ Beberapa algoritma dikembangkan dan dievaluasi:
 - **Logistic Regression**
 
 `lr = LogisticRegression(max_iter=1000)`
+
 `lr.fit(X_train, y_train)`
 
 Logistic Regression digunakan dengan parameter:
-max_iter=1000       : Menentukan jumlah maksimum iterasi pelatihan, ditingkatkan untuk memastikan konvergensi pada dataset yang lebih kompleks.
+- max_iter=1000       : Menentukan jumlah maksimum iterasi pelatihan, ditingkatkan untuk memastikan konvergensi pada dataset yang lebih kompleks.
 
 Logistic Regression adalah algoritma yang sederhana, cepat, dan mudah diinterpretasikan. Kelebihan utamanya terletak pada kemampuan memberikan pemahaman yang jelas terhadap pengaruh masing-masing fitur terhadap probabilitas depresi, menjadikannya sangat cocok sebagai baseline model atau untuk kebutuhan yang menekankan interpretabilitas. Namun, Logistic Regression memiliki keterbatasan karena hanya bisa memodelkan hubungan linear antara variabel input dan target. Ia juga sensitif terhadap multikolinearitas dan outlier. Meskipun demikian, pada kasus ini, model ini justru menunjukkan performa yang sangat baik, dengan recall dan f1-score tertinggi pada kelas siswa yang mengalami depresi, menjadikannya pilihan yang baik terutama dalam konteks pencegahan dini.
 
 - **Random Forest**
 
 `rf = RandomForestClassifier(n_estimators=100, max_depth=10, random_state=42)`
+
 `rf.fit(X_train, y_train)`
 
 Random Forest Classifier digunakan dengan parameter:
-n_estimators=100    : Jumlah pohon keputusan yang dibentuk.
-max_depth=10        : Kedalaman maksimum pohon, untuk menghindari overfitting.
-random_state=42     : Seed untuk memastikan hasil dapat direproduksi.   
+- n_estimators=100    : Jumlah pohon keputusan yang dibentuk.
+- max_depth=10        : Kedalaman maksimum pohon, untuk menghindari overfitting.
+- random_state=42     : Seed untuk memastikan hasil dapat direproduksi.   
 
 Random Forest adalah model yang lebih kompleks dan tangguh, sangat efektif dalam menangani data dengan hubungan non-linear dan interaksi antar fitur yang kompleks. Model ini bekerja dengan membangun banyak decision tree dan melakukan rata-rata untuk mengurangi overfitting, sehingga memberikan performa yang stabil dan akurat. Kelebihan lain dari Random Forest adalah kemampuannya dalam menentukan feature importance, sehingga berguna untuk mengetahui faktor-faktor dominan penyebab depresi. Meski demikian, Random Forest memerlukan waktu pelatihan dan sumber daya yang lebih besar, serta tidak seinterpretatif Logistic Regression. Namun, untuk kasus deteksi depresi siswa yang variabel-variabelnya saling terkait secara kompleks (seperti tekanan akademik, jam belajar, dan kepuasan belajar), Random Forest menjadi pilihan yang sangat tepat dari segi prediktif.
 
 - **Support Vector Machine (SVM)**
 
 `svm_model = SVC(kernel='rbf', C=1.0, gamma='scale', random_state=42)`
+
 `svm_model.fit(X_train, y_train)`
 
 SVM digunakan dengan parameter:
-kernel='rbf'        : Menggunakan Radial Basis Function untuk menangani klasifikasi non-linear.
-C=1.0               : Parameter regularisasi, untuk mengontrol margin dan kesalahan klasifikasi.
-gamma='scale'       : Nilai gamma dihitung otomatis berdasarkan data.
-random_state=42     : Seed acak untuk replikasi hasil.
+- kernel='rbf'        : Menggunakan Radial Basis Function untuk menangani klasifikasi non-linear.
+- C=1.0               : Parameter regularisasi, untuk mengontrol margin dan kesalahan klasifikasi.
+- gamma='scale'       : Nilai gamma dihitung otomatis berdasarkan data.
+- random_state=42     : Seed acak untuk replikasi hasil.
 
 Support Vector Machine (SVM) adalah algoritma yang sangat efektif untuk data berdimensi tinggi dan mampu menangani klasifikasi non-linear menggunakan kernel trick. SVM dikenal mampu membentuk margin pemisah optimal antar kelas. Namun, kekurangan SVM terletak pada waktu pelatihan yang lambat terutama untuk dataset besar, dan sulitnya interpretasi model,terutama saat menggunakan kernel non-linear. Dalam konteks proyek ini, performa SVM sebanding dengan Random Forest, tetapi tidak memberikan keunggulan signifikan, sehingga lebih cocok digunakan untuk eksperimen tambahan atau sebagai model cadangan dalam validasi silang.
 
