@@ -261,28 +261,28 @@ Model ini merekomendasikan film berdasarkan pola rating pengguna menggunakan pen
     * Model dilatih selama `epochs=20` dengan `batch_size=64` menggunakan data `x_train` dan `y_train` (rating yang dinormalisasi 0-1), serta divalidasi dengan `x_val` dan `y_val`.
 
 -   **Hasil (Top-N Recommendation)**:
-    * Untuk seorang pengguna acak (misalnya, `user_id` asli 104), model memprediksi rating untuk film-film yang belum pernah ditonton oleh pengguna tersebut.
+    * Untuk seorang pengguna acak (misalnya, `user_id` asli 361), model memprediksi rating untuk film-film yang belum pernah ditonton oleh pengguna tersebut.
     * 10 film dengan prediksi rating tertinggi kemudian direkomendasikan.
-    * **Contoh Film yang Pernah Dirating Tinggi oleh User 104**:
+    * **Contoh Film yang Pernah Dirating Tinggi oleh User 361**:
         ```
-        # - Amistad (1997) (Rating: 5.0), Genres: Drama
-        # - Swingers (1996) (Rating: 5.0), Genres: Comedy|Drama
-        # - Star Wars (1977) (Rating: 5.0), Genres: Action|Adventure|Romance|Sci-Fi|War
-        # - L.A. Confidential (1997) (Rating: 5.0), Genres: Crime|Film-Noir|Mystery|Thriller
-        # - Return of the Jedi (1983) (Rating: 5.0), Genres: Action|Adventure|Romance|Sci-Fi|War
+        # - Fargo (1996) (Rating: 5.0), Genres: Crime|Drama|Thriller
+        # - Silence of the Lambs, The (1991) (Rating: 5.0), Genres: Drama|Thriller
+        # - Strictly Ballroom (1992) (Rating: 5.0), Genres: Comedy|Romance
+        # - Unbearable Lightness of Being, The (1988) (Rating: 5.0), Genres: Drama
+        # - Shine (1996) (Rating: 5.0), Genres: Drama|Romance
         ```
-    * **Contoh Top 10 Rekomendasi Film untuk User 104**:
+    * **Contoh Top 10 Rekomendasi Film untuk User 361**:
         ```
-        # - World of Apu, The (Apur Sansar) (1959), Genres: Drama
-        # - Dr. Strangelove or: How I Learned to Stop Worrying and Love the Bomb (1963), Genres: Sci-Fi|War
-        # - Eat Drink Man Woman (1994), Genres: Comedy|Drama
-        # - Bridge on the River Kwai, The (1957), Genres: Drama|War
-        # - To Kill a Mockingbird (1962), Genres: Drama
-        # - Eve's Bayou (1997), Genres: Drama
+        # - Pather Panchali (1955), Genres: Drama
+        # - Wrong Trousers, The (1993), Genres: Animation|Comedy
         # - Shawshank Redemption, The (1994), Genres: Drama
+        # - One Flew Over the Cuckoo's Nest (1975), Genres: Drama
+        # - Close Shave, A (1995), Genres: Animation|Comedy|Thriller
+        # - World of Apu, The (Apur Sansar) (1959), Genres: Drama
+        # - Grand Day Out, A (1992), Genres: Animation|Comedy
+        # - Casablanca (1942), Genres: Drama|Romance|War
+        # - Faust (1994), Genres: Animation
         # - Raise the Red Lantern (1991), Genres: Drama
-        # - Notorious (1946), Genres: Film-Noir|Romance|Thriller
-        # - Late Bloomers (1996), Genres: Comedy
         ```
     
     **Kelebihan**:
@@ -299,7 +299,62 @@ Model ini merekomendasikan film berdasarkan pola rating pengguna menggunakan pen
 ## Evaluation
 
 -   **Content-Based Filtering**:
-    * Evaluasi untuk model ini dalam proyek ini bersifat **kualitatif**. Dengan melihat output rekomendasi untuk film 'Toy Story (1995)' (genre Animation, Children, Comedy), film-film yang direkomendasikan seperti 'Aladdin and the King of Thieves' dan 'Gumby: The Movie' juga memiliki genre Animation dan Children, yang menunjukkan relevansi berdasarkan konten.
+    * Metrik evaluasi utama yang digunakan adalah **Precision@K**.
+    * **Definisi Precision@K**:
+        Precision@K mengukur proporsi item yang direkomendasikan dalam K item teratas yang benar-benar relevan. Dalam konteks proyek ini, K diatur menjadi 5 (Precision@5). Sebuah item dianggap "relevan" jika skor kesamaan kontennya (berdasarkan `cosine_similarity` pada fitur TF-IDF genre) dengan film target adalah $\ge 0.5$.
+        $$\text{Precision@K} = \frac{\text{|{Recommended Items in Top K}} \cap \text{{Relevant Items}}|}{\text{K}}$$
+        Di mana:
+        * `{Recommended Items in Top K}` adalah himpunan item yang direkomendasikan oleh sistem dalam K posisi teratas.
+        * `{Relevant Items}` adalah himpunan item yang dianggap relevan berdasarkan *ground truth* (dalam kasus ini, film dengan skor kesamaan $\ge 0.5$ dengan film target, tidak termasuk film target itu sendiri).
+        * Nilai Precision@K yang lebih tinggi menunjukkan bahwa sebagian besar rekomendasi teratas adalah item yang relevan, sehingga model dianggap lebih baik dalam menyajikan pilihan yang berguna bagi pengguna.
+
+    * **Cara Kerja Metrik dalam Proyek Ini**:
+        Evaluasi dilakukan pada 5 film sampel. Untuk setiap film sampel:
+        1.  Sistem menghasilkan 5 film rekomendasi teratas (`K=5`).
+        2.  Daftar film "relevan" (*ground truth*) ditentukan sebagai film-film lain dalam dataset yang memiliki skor kesamaan konten $\ge 0.5$ dengan film sampel.
+        3.  Precision@5 dihitung dengan membandingkan 5 film yang direkomendasikan dengan daftar film relevan tersebut.
+
+    * **Hasil Proyek Berdasarkan Metrik (Content-Based Filtering)**:
+        Berdasarkan log evaluasi yang diberikan:
+        * **Evaluasi Individu untuk Film Sampel (K=5, Similarity Threshold=0.5):**
+            * 'Toy Story (1995)':
+                * Rekomendasi: 5 film (misalnya, 'Aladdin and the King of Thieves (1996)', 'Gumby: The Movie (1995)')
+                * Jumlah Film Relevan (Ground Truth): 76
+                * Precision@5: **1.0000**
+            * 'Michael Collins (1996)':
+                * Rekomendasi: 5 film (misalnya, 'Welcome To Sarajevo (1997)', 'Apocalypse Now (1979)')
+                * Jumlah Film Relevan (Ground Truth): 64
+                * Precision@5: **1.0000**
+            * 'Deceiver (1997)':
+                * Rekomendasi: 7 film terdaftar (namun Precision@5 dihitung berdasarkan 5 teratas)
+                * Jumlah Film Relevan (Ground Truth): 96
+                * Precision@5: **0.4000**
+            * 'Star Wars (1977)':
+                * Rekomendasi: 5 film (misalnya, 'Return of the Jedi (1983)', 'Empire Strikes Back, The (1980)')
+                * Jumlah Film Relevan (Ground Truth): 136
+                * Precision@5: **1.0000**
+            * 'Grand Day Out, A (1992)':
+                * Rekomendasi: 5 film (misalnya, 'Beavis and Butt-head Do America (1996)', 'Wallace & Gromit: The Best of Aardman Animation (1996)')
+                * Jumlah Film Relevan (Ground Truth): 37
+                * Precision@5: **0.8000**
+
+        * **Rata-rata Metrik Evaluasi Keseluruhan (untuk sampel yang dievaluasi):**
+            * Mean Precision@5: **0.8400**
+
+        Tabel ringkasan hasil evaluasi:
+        | movie\_title             |   Precision@K |   Num\_Recommended\_Actual |   Num\_Relevant\_GT |
+        | :----------------------- | :------------ | :------------------------- | :------------------ |
+        | Toy Story (1995)         |           1   |                          5 |                  76 |
+        | Michael Collins (1996)   |           1   |                          5 |                  64 |
+        | Deceiver (1997)          |           0.4 |                          7 |                  96 |
+        | Star Wars (1977)         |           1   |                          5 |                 136 |
+        | Grand Day Out, A (1992)  |           0.8 |                          5 |                  37 |
+
+        * **Interpretasi Hasil**:
+            Nilai rata-rata Precision@5 sebesar **0.8400** untuk 5 film sampel menunjukkan bahwa model Content-Based Filtering memiliki kinerja yang baik. Artinya, secara rata-rata, 84% dari 5 film teratas yang direkomendasikan oleh sistem dianggap relevan berdasarkan kesamaan genre (dengan skor kesamaan $\ge 0.5$) terhadap film yang dijadikan acuan.
+
+            Sebagian besar film yang diuji, seperti 'Toy Story (1995)', 'Michael Collins (1996)', dan 'Star Wars (1977)', mencapai Precision@5 sempurna (1.0), yang mengindikasikan bahwa semua rekomendasi teratas sangat relevan. Film 'Grand Day Out, A (1992)' juga menunjukkan presisi yang tinggi (0.8). Kasus 'Deceiver (1997)' dengan Precision@5 sebesar 0.4000 menunjukkan bahwa kinerja dapat bervariasi; ini bisa disebabkan oleh profil genre film tersebut yang mungkin kurang umum atau memiliki lebih sedikit tetangga dekat dengan skor kesamaan tinggi di dalam dataset. Meskipun demikian, secara keseluruhan, model ini efektif dalam mengidentifikasi dan merekomendasikan film-film dengan konten genre yang serupa.
+
 
 -   **Collaborative Filtering**:
     * Metrik evaluasi utama yang digunakan adalah **Root Mean Squared Error (RMSE)** dan **Mean Squared Error (MSE)** sebagai *loss function*.
@@ -310,12 +365,12 @@ Model ini merekomendasikan film berdasarkan pola rating pengguna menggunakan pen
     * **Cara Kerja Metrik**: Selama training, model mencoba meminimalkan MSE (dan secara implisit RMSE) pada data training. Kinerja pada data validasi (RMSE validasi dan loss validasi) dipantau untuk melihat seberapa baik model melakukan generalisasi pada data yang belum pernah dilihat. Jika RMSE validasi mulai meningkat sementara RMSE training terus menurun, itu adalah tanda overfitting.
     * **Hasil Proyek Berdasarkan Metrik (Collaborative Filtering)**:
         Berdasarkan plot training yang dihasilkan:
-        * Model dihentikan oleh `EarlyStopping` pada epoch ke-9 (dari 20 epoch yang direncanakan), yang mengindikasikan bahwa `val_loss` tidak lagi membaik.
-        * Pada epoch terakhir (epoch 9):
-            * `loss` (MSE training): sekitar 0.0445
-            * `root_mean_squared_error` (RMSE training): sekitar 0.2120
-            * `val_loss` (MSE validasi): sekitar 0.0587
-            * `val_root_mean_squared_error` (RMSE validasi): sekitar 0.2412
+        * Model dihentikan oleh `EarlyStopping` pada epoch ke-8 (dari 20 epoch yang direncanakan), yang mengindikasikan bahwa `val_loss` tidak lagi membaik.
+        * Pada epoch terakhir (epoch 8):
+            * `loss` (MSE training): sekitar 0.0454
+            * `root_mean_squared_error` (RMSE training): sekitar 0.2122
+            * `val_loss` (MSE validasi): sekitar 0.0598
+            * `val_root_mean_squared_error` (RMSE validasi): sekitar 0.2439
 
         **Interpretasi Hasil**:
-        Nilai val_root_mean_squared_error terbaik yang dicapai adalah sekitar 0.2367. Mengingat target rating y dinormalisasi ke rentang [0, 1], nilai RMSE ini menunjukkan rata-rata kesalahan prediksi. Untuk menginterpretasikannya dalam skala rating asli (1-5, dengan rentang 4 poin), kita dapat mengalikannya: 0.2367×(5−1)=0.2367×4≈0.9468. Ini berarti, secara rata-rata, prediksi rating model memiliki kesalahan sekitar 0.95 poin pada skala rating 1-5. Ini merupakan performa yang cukup baik untuk model sistem rekomendasi, yang menunjukkan model mampu mempelajari pola preferensi pengguna dari data rating yang ada. 
+        Nilai val_root_mean_squared_error terbaik yang dicapai adalah sekitar 0.2439. Mengingat target rating y dinormalisasi ke rentang [0, 1], nilai RMSE ini menunjukkan rata-rata kesalahan prediksi. Untuk menginterpretasikannya dalam skala rating asli (1-5, dengan rentang 4 poin), kita dapat mengalikannya: 0.2439×(5−1)=0.2439×4≈0.9756. Ini berarti, secara rata-rata, prediksi rating model memiliki kesalahan sekitar 0.9756 poin pada skala rating 1-5. Ini merupakan performa yang cukup baik untuk model sistem rekomendasi, yang menunjukkan model mampu mempelajari pola preferensi pengguna dari data rating yang ada. 
